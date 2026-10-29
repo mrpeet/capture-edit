@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "User-Agent", "operation": "set", "value": "DiscordBot (https://localhost/captureedit, 0.1.0)" },
+        { "header": "Origin", "operation": "remove" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||discord.com/api/",
+      "resourceTypes": ["xmlhttprequest"],
+      "excludedInitiatorDomains": ["discord.com", "discordapp.com"]
+    }
+  }
+]

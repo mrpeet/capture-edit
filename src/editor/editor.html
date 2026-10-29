@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CaptureEdit</title>
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true"></span><h1>CaptureEdit</h1></div>
+    <span id="clipname" class="clipname"></span>
+    <span class="grow"></span>
+    <label class="btn" for="file" data-icon="upload">Datei öffnen</label>
+    <input id="file" type="file" accept="audio/*,video/mp4,video/webm" hidden>
+    <button id="openTargets" class="btn" data-icon="sliders">Ziele</button>
+  </header>
+
+  <main>
+    <p id="status" class="banner" role="status" hidden></p>
+
+    <section id="empty" class="drop">
+      <div class="drop-ico" data-icon="upload"></div>
+      <p class="drop-title">Audiodatei hierher ziehen</p>
+      <p class="muted">oder oben „Datei öffnen“ wählen. Zum Aufnehmen auf einer YouTube-Seite im Panel „Clip aufnehmen“ klicken – die Aufnahme landet danach hier.</p>
+    </section>
+
+    <div id="work" hidden>
+      <!-- 1 · Schneiden -->
+      <section class="card" id="cardCut">
+        <header class="card-h">
+          <span class="step">1</span><h2>Schneiden</h2>
+          <span class="grow"></span>
+          <span class="chip">Gesamt <b id="rTotal">–</b></span>
+          <span class="chip">Auswahl <b id="rSel">–</b></span>
+        </header>
+
+        <div class="wave-wrap"><canvas id="wave" tabindex="0" aria-label="Wellenform"></canvas></div>
+
+        <div class="bar">
+          <div class="grp">
+            <button id="play" class="icon-btn primary" title="Abspielen / Pause (Leertaste)" aria-label="Abspielen"></button>
+            <button id="loop" class="icon-btn" data-icon="repeat" aria-pressed="false" title="Schleife" aria-label="Schleife"></button>
+          </div>
+          <div class="pill" role="group" aria-label="Auswahl bearbeiten">
+            <button id="cut" class="tool" title="Auswahl herausschneiden (Entf)" data-icon="scissors">Cut</button>
+            <button id="crop" class="tool" title="Nur die Auswahl behalten" data-icon="crop">Trim</button>
+          </div>
+          <input id="scroll" type="range" min="0" max="1000" value="0" step="1" aria-label="Ausschnitt verschieben">
+          <div class="grp">
+            <button id="zoomOut" class="icon-btn sm" data-icon="zoom-out" title="Herauszoomen" aria-label="Herauszoomen"></button>
+            <button id="zoomIn" class="icon-btn sm" data-icon="zoom-in" title="Hineinzoomen" aria-label="Hineinzoomen"></button>
+            <button id="zoomSel" class="btn sm" title="Auf Auswahl zoomen">Auswahl</button>
+            <button id="zoomAll" class="icon-btn sm" data-icon="maximize" title="Alles zeigen" aria-label="Alles zeigen"></button>
+          </div>
+          <div class="grp">
+            <button id="undo" class="icon-btn sm" data-icon="undo" title="Rückgängig (Strg+Z)" aria-label="Rückgängig"></button>
+            <button id="redo" class="icon-btn sm" data-icon="redo" title="Wiederholen (Strg+Y)" aria-label="Wiederholen"></button>
+          </div>
+        </div>
+        <p class="hint">Ausgegeben wird immer nur die <b>Auswahl</b> (ohne Auswahl: der ganze Clip). Cut und Trim sind optional.</p>
+      </section>
+
+      <!-- 2 · Formen -->
+      <section class="card" id="cardShape">
+        <header class="card-h">
+          <span class="step">2</span><h2>Formen</h2>
+          <span class="grow"></span>
+          <span class="result">Ergebnis <b id="rOut">–</b> <span id="badge" class="badge"></span></span>
+        </header>
+
+        <div class="groups">
+          <div class="group">
+            <h3>Länge</h3>
+            <div class="row">
+              <label class="field inline">Ziellänge
+                <span class="num"><input id="target" type="number" min="0.1" max="60" step="0.1" value="5"><i>s</i></span>
+              </label>
+              <div class="presets" role="group" aria-label="Schnellwahl">
+                <button class="chip-btn" data-target="2">2 s</button>
+                <button class="chip-btn" data-target="3">3 s</button>
+                <button class="chip-btn" data-target="5">5 s</button>
+              </div>
+            </div>
+            <div class="field">
+              <span class="lbl">Ist die Auswahl länger …</span>
+              <div class="seg" role="radiogroup" aria-label="Stretch-Modus">
+                <label><input type="radio" name="stretch" value="tempo" checked><span>Tempo</span></label>
+                <label><input type="radio" name="stretch" value="speed"><span>Speed</span></label>
+                <label><input type="radio" name="stretch" value="off"><span>Nicht kürzen</span></label>
+              </div>
+              <p id="stretchHelp" class="help"></p>
+            </div>
+            <p id="stretchNote" class="note" hidden></p>
+          </div>
+
+          <div class="group">
+            <h3>Klang</h3>
+            <div class="slider">
+              <label for="fadeIn">Fade-in</label><output id="fadeInOut"></output>
+              <input id="fadeIn" type="range" min="0" max="1000" step="5" value="5" data-out="fadeInOut" data-unit=" ms">
+            </div>
+            <div class="slider">
+              <label for="fadeOut">Fade-out</label><output id="fadeOutOut"></output>
+              <input id="fadeOut" type="range" min="0" max="1000" step="5" value="30" data-out="fadeOutOut" data-unit=" ms">
+            </div>
+            <div class="slider">
+              <label for="volume">Lautstärke</label><output id="volumeOut"></output>
+              <input id="volume" type="range" min="10" max="300" step="5" value="100" data-out="volumeOut" data-unit=" %">
+            </div>
+            <label class="switch"><input id="normalize" type="checkbox"><span class="track"></span><span>Normalisieren <small>lautester Punkt auf Maximum</small></span></label>
+          </div>
+        </div>
+
+        <footer class="card-f">
+          <button id="preview" class="btn"></button>
+          <span class="muted small">Spielt genau das, was gesendet wird.</span>
+        </footer>
+      </section>
+
+      <!-- 3 · Senden -->
+      <section class="card" id="cardSend">
+        <header class="card-h">
+          <span class="step">3</span><h2>Senden</h2>
+          <span class="grow"></span>
+          <span class="result">Ergebnis <b id="sendLen">–</b></span>
+        </header>
+
+        <div class="send-fields">
+          <label class="field">Name <input id="name" type="text" maxlength="32" value="clip"></label>
+          <label class="field">Format <select id="format"><option value="mp3">MP3</option><option value="wav">WAV</option></select></label>
+          <label class="field">Emoji (nur Discord) <input id="emoji" type="text" maxlength="8" placeholder="optional"></label>
+        </div>
+        <p class="help">Discord bekommt immer MP3, das Format gilt für Dateien und Ordner.</p>
+
+        <ul id="targets" class="targets"></ul>
+        <div class="card-f">
+          <button id="addTarget" class="btn" data-icon="plus">Ziel hinzufügen</button>
+          <button id="manageTargets" class="link">Ziele verwalten</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="targetsDlg">
+    <div class="dlg-h">
+      <h2 id="dlgTitle">Ziele</h2>
+      <button id="dlgClose" class="icon-btn sm" data-icon="x" aria-label="Schließen"></button>
+    </div>
+    <div id="dlgBody" class="dlg-b"></div>
+  </dialog>
+
+  <script src="../vendor/lame.min.js"></script>
+  <script type="module" src="editor.js"></script>
+</body>
+</html>

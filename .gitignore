@@ -1,0 +1,11 @@
+# Zugangsdaten und lokale Notizen – nie veröffentlichen
+secrets*
+Textdokument*.txt
+*.local.*
+.claude/
+PLAN.md
+
+# Build-Ergebnisse
+dist/
+release/
+node_modules/

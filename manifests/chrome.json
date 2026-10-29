@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "CaptureEdit",
+  "version": "0.1.0",
+  "description": "Audio-Clips von YouTube oder aus Dateien aufnehmen, kürzen und fürs Discord-Soundboard bereitmachen.",
+  "icons": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png" },
+  "action": {
+    "default_title": "CaptureEdit – Editor öffnen",
+    "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png" }
+  },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["storage", "declarativeNetRequestWithHostAccess"],
+  "optional_permissions": ["downloads"],
+  "host_permissions": ["https://discord.com/*"],
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "discord_headers", "enabled": true, "path": "rules/discord-headers.json" }]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://music.youtube.com/*", "https://m.youtube.com/*"],
+      "js": ["content/youtube.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
